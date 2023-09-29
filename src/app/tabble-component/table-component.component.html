@@ -1,0 +1,170 @@
+<div *ngIf="activeButtonId !== 4; else details" class="table">
+  <div class="row d-flex align-items-center p-3">
+    <div class="col-lg-6 col-md-6 col-sm-12">
+      <!-- Left side column for select -->
+      <div *ngIf="activeButtonId === 0" class="d-flex align-items-center">
+        <label for="sortSelect" class="me-2">Sortuj według:</label>
+        <select
+          id="sortSelect"
+          class="form-select"
+          [(ngModel)]="selectedSortOption"
+          (change)="sortClients()"
+        >
+          <option>Imie</option>
+          <option>Nazwisko</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end">
+      <!-- Right side column for input -->
+      <div class="d-flex align-items-center">
+        <label for="input" class="px-3">Wyszukaj</label>
+        <input
+          id="input"
+          type="text"
+          [(ngModel)]="filterText"
+          (input)="applyFilter()"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="content-1" *ngIf="activeButtonId === 0">
+    <div class="row d-flex justify-content-between pt-4 ps-3">
+      <p class="table-label col d-flex justify-content-center">Imie</p>
+      <p class="table-label col d-flex justify-content-center">Nazwisko</p>
+      <p class="table-label col d-flex justify-content-center">NIP</p>
+      <p class="table-label col d-flex justify-content-center">Telefon</p>
+      <p class="table-label col d-flex justify-content-center">e-mail</p>
+      <p class="table-label col d-flex justify-content-center">Akcje</p>
+    </div>
+
+    <div class="row myElement pt-4 ps-3" *ngFor="let client of filteredClients">
+      <p class="col d-flex justify-content-center">{{ client.firstName }}</p>
+      <p class="col d-flex justify-content-center">{{ client.lastName }}</p>
+      <p class="col d-flex justify-content-center">{{ client.nip }}</p>
+      <p class="col d-flex justify-content-center">
+        {{ client.contact[0].value }}
+      </p>
+      <p class="col d-flex justify-content-center">
+        {{ client.contact[1].value }}
+      </p>
+
+      <fa-icon
+        (click)="openDetails(client.id)"
+        class="icon col d-flex justify-content-center"
+        [icon]="faInfo"
+        size="2x"
+      ></fa-icon>
+    </div>
+  </div>
+  <div class="content-2" *ngIf="activeButtonId === 1">
+    <div
+      *ngIf="activeButtonId === 1"
+      class="row d-flex justify-content-between pt-4 ps-3"
+    >
+      <p class="table-label col d-flex justify-content-center">Imie</p>
+      <p class="table-label col d-flex justify-content-center">Nazwisko</p>
+      <p class="table-label col d-flex justify-content-center">Data</p>
+      <p class="table-label col d-flex justify-content-center">Typ Zdarzenia</p>
+    </div>
+    <div
+      class="d-flex justify-content-between pt-4 ps-3"
+      *ngFor="let event of filteredEvents; let i = index"
+    >
+      <p class="col d-flex justify-content-center">
+        {{ getFirstName(event.clientId) }}
+      </p>
+      <p class="col d-flex justify-content-center">
+        {{ getSecondName(event.clientId) }}
+      </p>
+      <p class="col d-flex justify-content-center">{{ event.eventDate }}</p>
+      <p class="col d-flex justify-content-center">{{ event.eventName }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="activeButtonId === 2">
+    <div class="px-3 mb-3">
+      <label for="disabledSelect" class="form-label">Klient</label>
+      <select id="disabledSelect" class="form-select" #selectedClient>
+        <option *ngFor="let client of clients; let i = index">
+          {{ client.firstName }} {{ client.lastName }}
+          <span>{{ client.id }}</span>
+        </option>
+      </select>
+    </div>
+    <div class="px-3 mb-3">
+      <label for="disabledTextInput" class="form-label">Typ zdarzenia</label>
+      <input
+        type="text"
+        id="disabledTextInput"
+        class="form-control"
+        placeholder="Max. 50 znaków"
+        maxlength="50"
+        (input)="canISend()"
+        #zdarzenie
+      />
+    </div>
+    <div class="px-3 mb-3">
+      <label for="data" class="form-label">Data zdarzenia:</label>
+      <input
+        type="date"
+        id="data"
+        name="data"
+        class="form-control"
+        (input)="canISend()"
+        #data
+      />
+    </div>
+    <button
+      [disabled]="isDisabled"
+      class="btn btn-primary ms-3"
+      (click)="sendTheData(data.value)"
+    >
+      Wyślij
+    </button>
+  </div>
+</div>
+
+<ng-template #details>
+  <div class="container-fluid p-0" style="height: 100%; width: 100%">
+    <div class="row g-0" style="height: 100%">
+      <div
+        class="col-sm-3 list-group list-group-flush p-3 ps-5 pt-4"
+        style="background-color: #23252a"
+      >
+        <p class="text-light">
+          Imie: {{ getClientById(clientIdHolder)?.firstName }}
+        </p>
+        <p class="text-light">
+          Nazwisko: {{ getClientById(clientIdHolder)?.lastName }}
+        </p>
+        <p class="text-light">Id: {{ getClientById(clientIdHolder)?.id }}</p>
+        <p class="text-light">NIP: {{ getClientById(clientIdHolder)?.nip }}</p>
+        <p class="text-light">
+          Adres: {{ getClientById(clientIdHolder)?.address[0].city }} ul.
+          {{ getClientById(clientIdHolder)?.address[0].street }}
+          {{ getClientById(clientIdHolder)?.address[0].number }}
+        </p>
+        <p class="text-light">
+          {{ getClientById(clientIdHolder)?.address[0].code }}
+        </p>
+        <p class="text-light">
+          Telefon: {{ getClientById(clientIdHolder)?.contact[0].value }}
+        </p>
+        <p class="text-light">
+          email: {{ getClientById(clientIdHolder)?.contact[1].value }}
+        </p>
+        <p class="text-white">Lista eventów:</p>
+        <p
+          class="text-light"
+          *ngFor="let event of getEventsForClient(clientIdHolder)"
+        >
+          {{ event.eventName }}
+        </p>
+      </div>
+      <div class="col-sm-9">
+        <app-google-maps style="height: 100%"></app-google-maps>
+      </div>
+    </div>
+  </div>
+</ng-template>
